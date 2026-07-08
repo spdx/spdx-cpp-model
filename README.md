@@ -1,6 +1,6 @@
 # spdx-cpp-model
 
-![Apache-2.0 license](https://img.shields.io/github/license/spdx/spdx-python-model)
+![Apache-2.0 license](https://img.shields.io/github/license/spdx/spdx-cpp-model)
 
 `spdx-cpp-model` is a C++ library for working with the SPDX 3 data model.
 
