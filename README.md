@@ -10,3 +10,11 @@ definitions of the [SPDX specification version 3][spdx-spec] using
 
 [spdx-spec]: https://spdx.org/specifications
 [shacl2code]: https://github.com/JPEWdev/shacl2code
+
+## Other language bindings
+
+Bindings for other languages include:
+
+- [spdx-python-model] - for Python
+
+[spdx-python-model]: https://github.com/spdx/spdx-python-model
