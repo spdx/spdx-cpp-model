@@ -1,0 +1,10 @@
+prefix=@@PREFIX@@
+exec_prefix=${prefix}
+includedir=${prefix}/include
+libdir=${exec_prefix}/lib
+
+Name: spdx-3.0.1
+Description: SPDX 3.0.1 C++ Bindings
+Version: 0.0.1
+Cflags: -I${includedir} -DSHACL2CODE_SPDX_3_0_1_DLL
+Libs: -L${libdir} -lspdx-3.0.1

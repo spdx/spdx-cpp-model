@@ -1,0 +1,8 @@
+*~
+*.bak
+*.swo
+*.o
+*.a
+*.so
+src/**/*-validate
+src/**/doc/

@@ -1,0 +1,74 @@
+#! /bin/sh
+#
+# SPDX-FileType: SOURCE
+# SPDX-License-Identifier: Apache-2.0
+#
+# Generate the per-version bindings and the bindings package __init__.py.
+
+set -e
+
+LIB_VERSION="0.0.1"
+
+# SPDX versions to generate
+SPDX_VERSIONS="3.0.1"
+
+get_context_url() {
+    echo "https://spdx.org/rdf/$1/spdx-context.jsonld"
+}
+
+get_namespace() {
+    echo "$1" | sed 's/[^a-zA-Z0-9_]/_/g'
+}
+
+# Generate the per-version bindings with shacl2code.
+# Each version ends up in its own subdirectory (e.g. "v3_0_1").
+for v in $SPDX_VERSIONS; do
+    mkdir -p src/$v
+
+    CONTEXT_URL="$(get_context_url "$v")"
+    if [ -n "${SHACL2CODE_SPDX_DIR}" ] && [ -d "${SHACL2CODE_SPDX_DIR}/$v" ]
+    then
+        shacl2code generate --input "file://${SHACL2CODE_SPDX_DIR}/$v/spdx-model.ttl" \
+            --input "file://${SHACL2CODE_SPDX_DIR}/$v/spdx-json-serialize-annotations.ttl" \
+            --context-url "file://${SHACL2CODE_SPDX_DIR}/$v/spdx-context.jsonld" $CONTEXT_URL \
+            --license Apache-2.0 \
+            cpp \
+            --version $LIB_VERSION \
+            --output "src/$v/spdx-$v" \
+            --description "SPDX $v C++ Bindings" \
+            --namespace "SPDX::v$(get_namespace "$v")"
+    else
+        shacl2code generate --input https://spdx.org/rdf/$v/spdx-model.ttl \
+            --input https://spdx.org/rdf/$v/spdx-json-serialize-annotations.ttl \
+            --context $CONTEXT_URL \
+            --license Apache-2.0 \
+            cpp \
+            --version $LIB_VERSION \
+            --output "src/$v/spdx-$v" \
+            --description "SPDX $v C++ Bindings" \
+            --namespace "SPDX::v$(get_namespace "$v")"
+    fi
+done
+
+# Generate toplevel Makefile
+{
+    echo "all:"
+    for v in $SPDX_VERSIONS; do
+        echo "\t\$(MAKE) -C src/$v"
+    done
+    echo ""
+
+    echo "clean:"
+    for v in $SPDX_VERSIONS; do
+        echo "\t\$(MAKE) -C src/$v clean"
+    done
+    echo ""
+    
+    echo "install:"
+    for v in $SPDX_VERSIONS; do
+        echo "\t\$(MAKE) -C src/$v install"
+    done
+    echo ""
+    echo ".PHONY: all clean install"
+} > Makefile
+
